@@ -2,9 +2,9 @@ import java.util.Arrays;
 
 public class Bitmap
 {
-	private final int m_Width;
-	private final int m_Height;
-	private final byte[] m_Bytes;
+	private final int 		m_Width;
+	private final int 		m_Height;
+	private final byte[] 	m_Bytes;
 	
 	public Bitmap(int _width, int _height)
 	{

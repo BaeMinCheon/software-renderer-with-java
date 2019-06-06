@@ -53,4 +53,9 @@ public class Display extends Canvas
 				this.m_FrameBuffer.GetHeight(), null);
 		this.m_BufferStrategy.show();
 	}
+	
+	public Bitmap GetFrameBuffer()
+	{
+		return this.m_FrameBuffer;
+	}
 }
