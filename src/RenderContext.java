@@ -29,4 +29,36 @@ public class RenderContext extends Bitmap
 			}
 		}
 	}
+	
+	public void ScanConvertTriangle(Vertex _minY, Vertex _midY, Vertex _maxY, int _side)
+	{
+		this.ScanConvertLine(_minY, _maxY, _side);
+		this.ScanConvertLine(_minY, _midY, 1 - _side);
+		this.ScanConvertLine(_midY, _maxY, 1 - _side);
+	}
+	
+	private void ScanConvertLine(Vertex _minY, Vertex _maxY, int _side)
+	{
+		int yStart = (int)_minY.GetY();
+		int yEnd = (int)_maxY.GetY();
+		int xStart = (int)_minY.GetX();
+		int xEnd = (int)_maxY.GetX();
+		
+		int yDist = yEnd - yStart;
+		int xDist = xEnd - xStart;
+		
+		if(yDist <= 0)
+		{
+			return;
+		}
+		
+		float xStep = ((float)xDist)/((float)yDist);
+		float xCurr = (float)xStart;
+		
+		for(int y = yStart; y < yEnd; ++y)
+		{
+			this.m_ScanBuffer[y * 2 + _side] = (int)xCurr;
+			xCurr += xStep;
+		}
+	}
 }
