@@ -29,4 +29,15 @@ public class Vertex
 		this.m_X = _x;
 		this.m_Y = _y;
 	}
+	
+	public float TriangleArea(Vertex _b, Vertex _c)
+	{
+		float x1 = _b.GetX() - this.m_X;
+		float y1 = _b.GetY() - this.m_Y;
+		float x2 = _c.GetX() - this.m_X;
+		float y2 = _c.GetY() - this.m_Y;
+		
+		float crossProduct = x1 * y2 - x2 * y1;
+		return crossProduct;
+	}
 }

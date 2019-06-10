@@ -37,6 +37,40 @@ public class RenderContext extends Bitmap
 		this.ScanConvertLine(_midY, _maxY, 1 - _side);
 	}
 	
+	public void FillTriangle(Vertex _v1, Vertex _v2, Vertex _v3)
+	{
+		Vertex minY = _v1;
+		Vertex midY = _v2;
+		Vertex maxY = _v3;
+		
+		{	// sort
+			if(maxY.GetY() < midY.GetY())
+			{
+				Vertex temp = maxY;
+				maxY = midY;
+				midY = temp;
+			}
+			if(midY.GetY() < minY.GetY())
+			{
+				Vertex temp = midY;
+				midY = minY;
+				minY = temp;
+			}
+			if(maxY.GetY() < midY.GetY())
+			{
+				Vertex temp = maxY;
+				maxY = midY;
+				midY = temp;
+			}
+		}
+		
+		float area = minY.TriangleArea(maxY, midY);
+		int side = (area >= 0.0f) ? 1 : 0;
+		
+		this.ScanConvertTriangle(minY, midY, maxY, side);
+		this.FillShape((int)minY.GetY(), (int)maxY.GetY());
+	}
+	
 	private void ScanConvertLine(Vertex _minY, Vertex _maxY, int _side)
 	{
 		int yStart = (int)_minY.GetY();
