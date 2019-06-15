@@ -64,7 +64,7 @@ public class RenderContext extends Bitmap
 			}
 		}
 		
-		float area = minY.TriangleArea(maxY, midY);
+		float area = minY.TriangleAreaTimesTwo(maxY, midY);
 		int side = (area >= 0.0f) ? 1 : 0;
 		
 		this.ScanConvertTriangle(minY, midY, maxY, side);
