@@ -6,7 +6,6 @@ public class RenderContext extends Bitmap
 	public RenderContext(int _width, int _height)
 	{
 		super(_width, _height);
-		
 		this.m_ScanBuffer = new int[_height * 2];
 	}
 	
@@ -30,18 +29,12 @@ public class RenderContext extends Bitmap
 		}
 	}
 	
-	public void ScanConvertTriangle(Vertex _minY, Vertex _midY, Vertex _maxY, int _side)
-	{
-		this.ScanConvertLine(_minY, _maxY, _side);
-		this.ScanConvertLine(_minY, _midY, 1 - _side);
-		this.ScanConvertLine(_midY, _maxY, 1 - _side);
-	}
-	
 	public void FillTriangle(Vertex _v1, Vertex _v2, Vertex _v3)
 	{
-		Vertex minY = _v1;
-		Vertex midY = _v2;
-		Vertex maxY = _v3;
+		Matrix4f screenSpaceTransform = new Matrix4f().InitScreenSpaceTransform(this.GetWidth() / 2.0f, this.GetHeight() / 2.0f);
+		Vertex minY = _v1.Transform(screenSpaceTransform).PerspectiveDivide();
+		Vertex midY = _v2.Transform(screenSpaceTransform).PerspectiveDivide();
+		Vertex maxY = _v3.Transform(screenSpaceTransform).PerspectiveDivide();
 		
 		{	// sort
 			if(maxY.GetY() < midY.GetY())
@@ -94,5 +87,12 @@ public class RenderContext extends Bitmap
 			this.m_ScanBuffer[y * 2 + _side] = (int)xCurr;
 			xCurr += xStep;
 		}
+	}
+	
+	public void ScanConvertTriangle(Vertex _minY, Vertex _midY, Vertex _maxY, int _side)
+	{
+		this.ScanConvertLine(_minY, _maxY, _side);
+		this.ScanConvertLine(_minY, _midY, 1 - _side);
+		this.ScanConvertLine(_midY, _maxY, 1 - _side);
 	}
 }

@@ -73,26 +73,27 @@ public class Matrix4f
 	
 	public Matrix4f InitRotation(float _x, float _y, float _z)
 	{
-		this.InitIdentity();
-		
-		Matrix4f rx = this;
-		Matrix4f ry = this;
-		Matrix4f rz = this;
+		Matrix4f rx = new Matrix4f();
+		Matrix4f ry = new Matrix4f();
+		Matrix4f rz = new Matrix4f();
 
-		rz.m_Matrix[0][0] = (float)Math.cos(_z);
-		rz.m_Matrix[0][1] = -(float)Math.sin(_z);
-		rz.m_Matrix[1][0] = (float)Math.sin(_z);
-		rz.m_Matrix[1][1] = (float)Math.cos(_z);
+		rz.InitIdentity();
+		rz.SetElement(0, 0, (float)Math.cos(_z));
+		rz.SetElement(0, 1, (float)Math.sin(_z) * -1.0f);
+		rz.SetElement(1, 0, (float)Math.sin(_z));
+		rz.SetElement(1, 1, (float)Math.cos(_z));
 
-		rx.m_Matrix[1][1] = (float)Math.cos(_x);
-		rx.m_Matrix[1][2] = -(float)Math.sin(_x);
-		rx.m_Matrix[2][1] = (float)Math.sin(_x);
-		rx.m_Matrix[2][2] = (float)Math.cos(_x);
+		rx.InitIdentity();
+		rx.SetElement(1, 1, (float)Math.cos(_x));
+		rx.SetElement(1, 2, (float)Math.sin(_x) * -1.0f);
+		rx.SetElement(2, 1, (float)Math.sin(_x));
+		rx.SetElement(2, 2, (float)Math.cos(_x));
 		
-		ry.m_Matrix[0][0] = (float)Math.cos(_y);
-		ry.m_Matrix[0][2] = -(float)Math.sin(_y);
-		ry.m_Matrix[2][0] = (float)Math.sin(_y);
-		ry.m_Matrix[2][2] = (float)Math.cos(_y);
+		ry.InitIdentity();
+		ry.SetElement(0, 0, (float)Math.cos(_y));
+		ry.SetElement(0, 2, (float)Math.sin(_y) * -1.0f);
+		ry.SetElement(2, 0, (float)Math.sin(_y));
+		ry.SetElement(2, 2, (float)Math.cos(_y));
 		
 		this.m_Matrix = rz.MatMul(ry.MatMul(rx)).GetMatrix();
 

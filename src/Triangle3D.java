@@ -75,11 +75,6 @@ public class Triangle3D
 			}
 			else if(counter == 3)
 			{
-				Vertex v1 = new Vertex(x1, y1);
-				Vertex v2 = new Vertex(x2, y2);
-				Vertex v3 = new Vertex(x, y);
-				_target.FillTriangle(v1, v2, v3);
-				
 				counter = 0;
 			}
 		}
