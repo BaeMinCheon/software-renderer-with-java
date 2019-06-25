@@ -61,30 +61,30 @@ public class RenderContext extends Bitmap
 		int side = (area >= 0.0f) ? 1 : 0;
 		
 		this.ScanConvertTriangle(minY, midY, maxY, side);
-		this.FillShape((int)minY.GetY(), (int)maxY.GetY());
+		this.FillShape((int)Math.ceil(minY.GetY()), (int)Math.ceil(maxY.GetY()));
 	}
 	
 	private void ScanConvertLine(Vertex _minY, Vertex _maxY, int _side)
 	{
-		int yStart = (int)_minY.GetY();
-		int yEnd = (int)_maxY.GetY();
-		int xStart = (int)_minY.GetX();
-		int xEnd = (int)_maxY.GetX();
+		int yStart 	= (int)Math.ceil(_minY.GetY());
+		int yEnd 	= (int)Math.ceil(_maxY.GetY());
+		int xStart 	= (int)Math.ceil(_minY.GetX());
 		
-		int yDist = yEnd - yStart;
-		int xDist = xEnd - xStart;
+		float yDist = _maxY.GetY() - _minY.GetY();
+		float xDist = _maxY.GetX() - _minY.GetX();
 		
 		if(yDist <= 0)
 		{
 			return;
 		}
 		
-		float xStep = ((float)xDist)/((float)yDist);
-		float xCurr = (float)xStart;
+		float xStep = xDist / yDist;
+		float yStepPrev = yStart - _minY.GetY();
+		float xCurr = (float)xStart + yStepPrev * xStep;
 		
 		for(int y = yStart; y < yEnd; ++y)
 		{
-			this.m_ScanBuffer[y * 2 + _side] = (int)xCurr;
+			this.m_ScanBuffer[y * 2 + _side] = (int)Math.ceil(xCurr);
 			xCurr += xStep;
 		}
 	}
