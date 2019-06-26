@@ -1,32 +1,9 @@
 
 public class RenderContext extends Bitmap
 {
-	private final int[] m_ScanBuffer;
-	
 	public RenderContext(int _width, int _height)
 	{
 		super(_width, _height);
-		this.m_ScanBuffer = new int[_height * 2];
-	}
-	
-	public void DrawScanBuffer(int _y, int _xMin, int _xMax)
-	{
-		this.m_ScanBuffer[_y * 2 + 0] = _xMin;
-		this.m_ScanBuffer[_y * 2 + 1] = _xMax;
-	}
-	
-	public void FillShape(int _yMin, int _yMax)
-	{
-		for(int y = _yMin; y < _yMax; ++y)
-		{
-			int xMin = this.m_ScanBuffer[y * 2 + 0];
-			int xMax = this.m_ScanBuffer[y * 2 + 1];
-			
-			for(int x = xMin; x < xMax; ++x)
-			{
-				this.DrawPixel(x, y, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF);
-			}
-		}
 	}
 	
 	public void FillTriangle(Vertex _v1, Vertex _v2, Vertex _v3)
@@ -57,42 +34,49 @@ public class RenderContext extends Bitmap
 			}
 		}
 		
-		float area = minY.TriangleAreaTimesTwo(maxY, midY);
-		int side = (area >= 0.0f) ? 1 : 0;
-		
-		this.ScanConvertTriangle(minY, midY, maxY, side);
-		this.FillShape((int)Math.ceil(minY.GetY()), (int)Math.ceil(maxY.GetY()));
+		boolean isBiggerThanRightAngle = minY.TriangleAreaTimesTwo(maxY, midY) < 0.0f;
+		this.ScanTriangle(minY, midY, maxY, isBiggerThanRightAngle);
 	}
 	
-	private void ScanConvertLine(Vertex _minY, Vertex _maxY, int _side)
+	private void ScanTriangle(Vertex _minY, Vertex _midY, Vertex _maxY, boolean _biggerThanRightAngle)
 	{
-		int yStart 	= (int)Math.ceil(_minY.GetY());
-		int yEnd 	= (int)Math.ceil(_maxY.GetY());
-		int xStart 	= (int)Math.ceil(_minY.GetX());
+		Edge topToBottom 	= new Edge(_minY, _maxY);
+		Edge topToMiddle 	= new Edge(_minY, _midY);
+		Edge middleToBottom = new Edge(_midY, _maxY);
 		
-		float yDist = _maxY.GetY() - _minY.GetY();
-		float xDist = _maxY.GetX() - _minY.GetX();
-		
-		if(yDist <= 0)
+		this.ScanEdges(topToBottom, topToMiddle, _biggerThanRightAngle);
+		this.ScanEdges(topToBottom, middleToBottom, _biggerThanRightAngle);
+	}
+	
+	private void ScanEdges(Edge _a, Edge _b, boolean _biggerThanRightAngle)
+	{
+		Edge left = _a;
+		Edge right = _b;
+		if(_biggerThanRightAngle == false)
 		{
-			return;
+			Edge temp = left;
+			left = right;
+			right = temp;
 		}
 		
-		float xStep = xDist / yDist;
-		float yStepPrev = yStart - _minY.GetY();
-		float xCurr = (float)xStart + yStepPrev * xStep;
-		
+		int yStart = _b.GetYStart();
+		int yEnd = _b.GetYEnd();
 		for(int y = yStart; y < yEnd; ++y)
 		{
-			this.m_ScanBuffer[y * 2 + _side] = (int)Math.ceil(xCurr);
-			xCurr += xStep;
+			this.DrawScanLine(left, right, y);
+			left.Step();
+			right.Step();
 		}
 	}
 	
-	public void ScanConvertTriangle(Vertex _minY, Vertex _midY, Vertex _maxY, int _side)
+	private void DrawScanLine(Edge _left, Edge _right, int _y)
 	{
-		this.ScanConvertLine(_minY, _maxY, _side);
-		this.ScanConvertLine(_minY, _midY, 1 - _side);
-		this.ScanConvertLine(_midY, _maxY, 1 - _side);
+		int xMin = (int)Math.ceil(_left.GetX());
+		int xMax = (int)Math.ceil(_right.GetX());
+		
+		for(int x = xMin; x < xMax; ++x)
+		{
+			this.DrawPixel(x, _y, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF);
+		}
 	}
 }
