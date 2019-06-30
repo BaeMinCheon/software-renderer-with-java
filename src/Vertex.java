@@ -2,6 +2,7 @@
 public class Vertex
 {
 	private Vector4f m_Pos;
+	private Vector4f m_Color;
 	
 	public float GetX()
 	{
@@ -13,20 +14,26 @@ public class Vertex
 		return this.m_Pos.GetY();
 	}
 	
-	public Vertex(float _x, float _y, float _z)
+	public Vector4f GetPosition()
 	{
-		this.m_Pos = new Vector4f(_x, _y, _z, 1.0f);
+		return this.m_Pos;
 	}
 	
-	public Vertex(Vector4f _vector)
+	public Vector4f GetColor()
 	{
-		this.m_Pos = _vector;
+		return this.m_Color;
+	}
+	
+	public Vertex(Vector4f _pos, Vector4f _color)
+	{
+		this.m_Pos = _pos;
+		this.m_Color = _color;
 	}
 	
 	public Vertex Transform(Matrix4f _transform)
 	{
 		Vector4f retVal = _transform.Transform(this.m_Pos);
-		return new Vertex(retVal);
+		return new Vertex(retVal, this.m_Color);
 	}
 	
 	public Vertex PerspectiveDivide()
@@ -35,7 +42,7 @@ public class Vertex
 		float newY = this.m_Pos.GetY() / this.m_Pos.GetW();
 		float newZ = this.m_Pos.GetZ() / this.m_Pos.GetW();
 		Vector4f newVec = new Vector4f(newX, newY, newZ, this.m_Pos.GetW());
-		Vertex retVal = new Vertex(newVec);
+		Vertex retVal = new Vertex(newVec, this.m_Color);
 		return retVal;
 	}
 	

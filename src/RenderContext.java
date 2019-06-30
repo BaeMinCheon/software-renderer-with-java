@@ -40,15 +40,16 @@ public class RenderContext extends Bitmap
 	
 	private void ScanTriangle(Vertex _minY, Vertex _midY, Vertex _maxY, boolean _biggerThanRightAngle)
 	{
-		Edge topToBottom 	= new Edge(_minY, _maxY);
-		Edge topToMiddle 	= new Edge(_minY, _midY);
-		Edge middleToBottom = new Edge(_midY, _maxY);
+		Gradient grad = new Gradient(_minY, _midY, _maxY);
+		Edge topToBottom 	= new Edge(grad, _minY, _maxY, 0);
+		Edge topToMiddle 	= new Edge(grad, _minY, _midY, 0);
+		Edge middleToBottom = new Edge(grad, _midY, _maxY, 1);
 		
-		this.ScanEdges(topToBottom, topToMiddle, _biggerThanRightAngle);
-		this.ScanEdges(topToBottom, middleToBottom, _biggerThanRightAngle);
+		this.ScanEdges(grad, topToBottom, topToMiddle, _biggerThanRightAngle);
+		this.ScanEdges(grad, topToBottom, middleToBottom, _biggerThanRightAngle);
 	}
 	
-	private void ScanEdges(Edge _a, Edge _b, boolean _biggerThanRightAngle)
+	private void ScanEdges(Gradient _grad, Edge _a, Edge _b, boolean _biggerThanRightAngle)
 	{
 		Edge left = _a;
 		Edge right = _b;
@@ -63,20 +64,26 @@ public class RenderContext extends Bitmap
 		int yEnd = _b.GetYEnd();
 		for(int y = yStart; y < yEnd; ++y)
 		{
-			this.DrawScanLine(left, right, y);
+			this.DrawScanLine(_grad, left, right, y);
 			left.Step();
 			right.Step();
 		}
 	}
 	
-	private void DrawScanLine(Edge _left, Edge _right, int _y)
+	private void DrawScanLine(Gradient _grad, Edge _left, Edge _right, int _y)
 	{
 		int xMin = (int)Math.ceil(_left.GetX());
 		int xMax = (int)Math.ceil(_right.GetX());
+		float xStepPrev = xMin - _left.GetX();
+		Vector4f color = _left.GetColor().Add(_grad.GetColorXStep().Mul(xStepPrev));
 		
 		for(int x = xMin; x < xMax; ++x)
 		{
-			this.DrawPixel(x, _y, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF);
+			byte r = (byte)(color.GetX() * 255.0f + 0.5f);
+			byte g = (byte)(color.GetY() * 255.0f + 0.5f);
+			byte b = (byte)(color.GetZ() * 255.0f + 0.5f);
+			this.DrawPixel(x, _y, (byte)0xFF, b, g, r);
+			color = color.Add(_grad.GetColorXStep());
 		}
 	}
 }
