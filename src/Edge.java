@@ -5,8 +5,10 @@ public class Edge
 	private float 	m_XStep;
 	private int 	m_YStart;
 	private int 	m_YEnd;
-	private Vector4f m_Color;
-	private Vector4f m_ColorStep;
+	private float 	m_TexCoordX;
+	private float	m_TexCoordXStep;
+	private float	m_TexCoordY;
+	private float	m_TexCoordYStep;
 	
 	public float GetX()
 	{
@@ -23,9 +25,14 @@ public class Edge
 		return this.m_YEnd;
 	}
 	
-	public Vector4f GetColor()
+	public float GetTexCoordX()
 	{
-		return this.m_Color;
+		return this.m_TexCoordX;
+	}
+	
+	public float GetTexCoordY()
+	{
+		return this.m_TexCoordY;
 	}
 	
 	public Edge(Gradient _grad, Vertex _minY, Vertex _maxY, int _minYIndex)
@@ -41,15 +48,21 @@ public class Edge
 		this.m_X = _minY.GetX() + yStepPrev * this.m_XStep;
 		
 		float xStepPrev = this.m_X - _minY.GetX();
-		this.m_Color = _grad.GetColor(_minYIndex).Add(
-				_grad.GetColorYStep().Mul(yStepPrev).Add(
-				_grad.GetColorXStep().Mul(xStepPrev)));
-		this.m_ColorStep = _grad.GetColorYStep().Add(_grad.GetColorXStep().Mul(this.m_XStep));
+		this.m_TexCoordX = _grad.GetTexCoordX(_minYIndex) +
+				_grad.GetTexCoordXXStep() * xStepPrev +
+				_grad.GetTexCoordXYStep() * yStepPrev;
+		this.m_TexCoordXStep = _grad.GetTexCoordXYStep() + _grad.GetTexCoordXXStep() * this.m_XStep;
+
+		this.m_TexCoordY = _grad.GetTexCoordY(_minYIndex) +
+				_grad.GetTexCoordYXStep() * xStepPrev +
+				_grad.GetTexCoordYYStep() * yStepPrev;
+		this.m_TexCoordYStep = _grad.GetTexCoordYYStep() + _grad.GetTexCoordYXStep() * this.m_XStep;
 	}
 	
 	public void Step()
 	{
 		this.m_X += this.m_XStep;
-		this.m_Color = this.m_Color.Add(this.m_ColorStep);
+		this.m_TexCoordX += this.m_TexCoordXStep;
+		this.m_TexCoordY += this.m_TexCoordYStep;
 	}
 }

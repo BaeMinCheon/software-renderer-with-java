@@ -6,6 +6,19 @@ public class Main
 		Display display = new Display(800, 600, "software-renderer-with-java");
 		RenderContext target = display.GetFrameBuffer();
 		
+		Bitmap texture = new Bitmap(32, 32);
+		for(int y = 0; y < texture.GetHeight(); ++y)
+		{
+			for(int x = 0; x < texture.GetWidth(); ++x)
+			{
+				texture.DrawPixel(x, y,
+					(byte)(Math.random() * 255.0 + 0.5),
+					(byte)(Math.random() * 255.0 + 0.5),
+					(byte)(Math.random() * 255.0 + 0.5),
+					(byte)(Math.random() * 255.0 + 0.5));
+			}
+		}
+		
 		Vertex minY = new Vertex(new Vector4f(-1.0f, -1.0f, 0.0f, 1.0f), new Vector4f(1.0f, 0.0f, 0.0f, 0.0f));
 		Vertex midY = new Vertex(new Vector4f(0.0f, 1.0f, 0.0f, 1.0f), new Vector4f(0.0f, 1.0f, 0.0f, 0.0f));
 		Vertex maxY = new Vertex(new Vector4f(1.0f, -1.0f, 0.0f, 1.0f), new Vector4f(0.0f, 0.0f, 1.0f, 0.0f));
@@ -28,7 +41,7 @@ public class Main
 			Matrix4f rotation = new Matrix4f().InitRotation(0.0f, rotAngle, 0.0f);
 			Matrix4f transform = projection.MatMul(translation.MatMul(rotation));
 			target.Clear((byte)0x00);
-			target.FillTriangle(maxY.Transform(transform), midY.Transform(transform), minY.Transform(transform));
+			target.FillTriangle(maxY.Transform(transform), midY.Transform(transform), minY.Transform(transform), texture);
 			
 			display.SwapBuffers();
 		}
